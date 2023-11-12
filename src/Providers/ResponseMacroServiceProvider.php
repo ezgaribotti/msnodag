@@ -18,8 +18,20 @@ class ResponseMacroServiceProvider
         $response->setStatusCode(200);
         $response->setMessage($message);
         if ($data) {
-            if ($data instanceof Dto) $data = $data->toArray();
-            $response->setData($data);
+            if ($data instanceof Dto) $response->setData($data->toArray());
+
+            if (is_array($data)) {
+                $result = [];
+                foreach ($data as $key => $value) {
+                    if (!$value instanceof Dto) {
+                        $message = 'El objeto de transferencia de datos en el listado de respuesta no es válido.';
+
+                        throw new \Exception($message, 500);
+                    }
+                    $result[] = $value->toArray();
+                }
+                $response->setData($result);
+            }
         }
         return new JsonResponse($response->toArray());
     }
