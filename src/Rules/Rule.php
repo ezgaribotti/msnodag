@@ -17,7 +17,8 @@ abstract class Rule
     {
         $constraints = new Assert\Collection($fields);
         $validator = Validation::createValidator();
-        $violations = $validator->validate($data, $constraints);
+        $violations = $validator->validate(
+            $this->clean($data), $constraints);
         if (count($violations) !== 0) {
             foreach ($violations as $violation) {
 
@@ -29,5 +30,22 @@ abstract class Rule
                 throw new \Exception($message);
             }
         }
+    }
+
+    public function clean(array $attributes): array
+    {
+        $result = [];
+        foreach ($attributes as $key => $value) {
+            if (is_numeric($value)) {
+                if (str_contains($value, chr(46))) {
+                    $result[$key] = floatval($value);
+                } else {
+                    $result[$key] = intval($value);
+                }
+            } else {
+                $result[$key] = $value;
+            }
+        }
+        return $result;
     }
 }

@@ -2,26 +2,40 @@
 
 namespace App\Controller;
 
+use App\Dto\Requests\LocalityTransferDto;
 use App\Providers\ResponseMacroServiceProvider;
+use App\Rules\Api\LocalityRule;
 use App\Services\LocalityService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class LocalityController extends AbstractController
 {
     public function __construct(
         protected ResponseMacroServiceProvider $response,
-        protected LocalityService $localityService
+        protected LocalityService $localityService,
+        protected LocalityRule $localityRule
     )
     {}
 
-    #[Route('/locality', name: 'app_locality')]
-    public function index(): JsonResponse
+    #[Route('/localities', name: 'app_locality')]
+    public function index(Request $request): JsonResponse
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/LocalityController.php',
-        ]);
+        try {
+            $this->localityRule->validate($request->query->all());
+        } catch (\Exception $exception) {
+            return $this->response->error($exception->getMessage(), 422);
+        }
+
+        try {
+            $localities = $this->localityService->search(
+                new LocalityTransferDto($request->query->all()));
+
+        } catch (\Exception $exception) {
+            return $this->response->error($exception->getMessage(), $exception->getCode());
+        }
+        return $this->response->success($localities);
     }
 }

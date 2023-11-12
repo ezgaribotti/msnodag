@@ -16,12 +16,14 @@ class ProvinceController extends AbstractController
     )
     {}
 
-    #[Route('/province', name: 'app_province')]
+    #[Route('/provinces', name: 'app_province')]
     public function index(): JsonResponse
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/ProvinceController.php',
-        ]);
+        try {
+            return $this->response->success($this->provinceService->getAll());
+
+        } catch (\Exception $exception) {
+            return $this->response->error($exception->getMessage(), $exception->getCode());
+        }
     }
 }

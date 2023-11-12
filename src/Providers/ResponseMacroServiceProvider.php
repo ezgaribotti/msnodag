@@ -31,6 +31,7 @@ class ResponseMacroServiceProvider
         }
         $response = new ResponseDto();
         $response->setSuccess(false);
+        if ($statusCode === 0) $statusCode = 500;
         $response->setStatusCode($statusCode);
         $response->setMessage($message);
         return new JsonResponse($response->toArray(), $statusCode);
