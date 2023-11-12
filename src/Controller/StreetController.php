@@ -2,26 +2,40 @@
 
 namespace App\Controller;
 
+use App\Dto\Requests\StreetTransferDto;
 use App\Providers\ResponseMacroServiceProvider;
+use App\Rules\Api\StreetRule;
 use App\Services\StreetService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class StreetController extends AbstractController
 {
     public function __construct(
         protected ResponseMacroServiceProvider $response,
-        protected StreetService $streetService
+        protected StreetService $streetService,
+        protected StreetRule $streetRule
     )
     {}
 
-    #[Route('/street', name: 'app_street')]
-    public function index(): JsonResponse
+    #[Route('/streets', name: 'app_street')]
+    public function index(Request $request): JsonResponse
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/StreetController.php',
-        ]);
+        try {
+            $this->streetRule->validate($request->query->all());
+        } catch (\Exception $exception) {
+            return $this->response->error($exception->getMessage(), 422);
+        }
+
+        try {
+            $streets = $this->streetService->search(
+                new StreetTransferDto($request->query->all()));
+
+        } catch (\Exception $exception) {
+            return $this->response->error($exception->getMessage(), $exception->getCode());
+        }
+        return $this->response->success($streets);
     }
 }
