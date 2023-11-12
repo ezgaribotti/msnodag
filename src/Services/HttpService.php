@@ -42,4 +42,11 @@ class HttpService
         }
         return $result;
     }
+
+    public function toDto(array $data, string $className): array
+    {
+        $result = [];
+        foreach ($data as $property) $result[] = new $className($property);
+        return $result;
+    }
 }
