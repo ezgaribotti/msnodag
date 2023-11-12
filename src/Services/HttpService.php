@@ -5,9 +5,15 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class HttpService
 {
+    public function __construct(
+        protected KernelInterface $kernel
+    )
+    {}
+
     public function fetch(string $uri, array $parameters = []): array
     {
         $client = new Client();
@@ -20,6 +26,20 @@ class HttpService
             throw new \Exception($exception->getMessage());
         }
         return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function prepare(string $configPath, array $data): array
+    {
+        try {
+            $map = json_decode(
+                file_get_contents(
+                    $this->kernel->getProjectDir(). $configPath), true);
+        } catch (\Exception $exception) {
+
+            throw new \Exception('Problemas al establecer el mapa de parámetros.');
+        }
+        $parameters = $this->format([$data], $map);
+        return reset($parameters);
     }
 
     public function format(array $data, array $map): array

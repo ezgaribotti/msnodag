@@ -20,7 +20,8 @@ class DepartmentService
     public function search(DepartmentTransferDto $data): array
     {
         $operation = $this->operationService->getByName(self::OPERATION_NAME);
-        $departments = $this->httpService->fetch($operation->getUri());
+        $parameters = $this->httpService->prepare($operation->getConfigPath(), $data->toArray());
+        $departments = $this->httpService->fetch($operation->getUri(), $parameters);
         $departments = $departments[$operation->getInsideKey()];
 
         if (!$departments) throw new \Exception('No se encontraron departamentos.', 404);
