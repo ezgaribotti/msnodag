@@ -17,6 +17,23 @@ class ProvinceService
     )
     {}
 
+    public function getAll(): array
+    {
+        $provinces = $this->entityManager->getRepository(Province::class)->findAll();
+        if (!$provinces) throw new \Exception('No se encontraron provincias.', 404);
+
+        $result = [];
+        foreach ($provinces as $province) {
+            $transport = new ProvinceDto();
+            $transport->setName($province->getName());
+            $transport->setExternalCode($province->getExternalCode());
+            $transport->setLatitude($province->getLatitude());
+            $transport->setLongitude($province->getLongitude());
+            $result[] = $transport->toArray();
+        }
+        return $result;
+    }
+
     public function load(): void
     {
         $operation = $this->operationService->getByName(self::OPERATION_NAME);
