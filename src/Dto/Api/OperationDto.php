@@ -10,6 +10,7 @@ class OperationDto extends Dto
     protected string $uri;
     protected string $inside_key;
     protected array $response_map;
+    protected ?array $default_data;
 
     public function getConfigPath(): string
     {
@@ -49,5 +50,15 @@ class OperationDto extends Dto
     public function setResponseMap(array $response_map): void
     {
         $this->response_map = $response_map;
+    }
+
+    public function getDefaultData(): ?array
+    {
+        return $this->default_data;
+    }
+
+    public function setDefaultData(?array $default_data): void
+    {
+        $this->default_data = $default_data;
     }
 }

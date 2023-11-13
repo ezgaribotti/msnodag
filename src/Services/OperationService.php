@@ -29,6 +29,7 @@ class OperationService
         $result->setConfigPath($operation->getService()->getConfigPath());
         $result->setInsideKey($operation->getInsideKey());
         $result->setResponseMap($operation->getResponseMap());
+        $result->setDefaultData($operation->getDefaultData());
         return $result;
     }
 }

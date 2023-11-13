@@ -18,7 +18,9 @@ class HttpService
     public function make(MakeHttpTransferDto $config): array
     {
         $operation = $config->getOperation();
-        $parameters = $this->prepare($operation->getConfigPath(), $config->getData());
+        $parameters = $this->prepare(
+            $operation->getConfigPath(), $config->getData(), $operation->getDefaultData());
+
         $response = $this->fetch($operation->getUri(), $parameters);
         $response = $response[$operation->getInsideKey()];
 
@@ -42,7 +44,7 @@ class HttpService
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    private function prepare(string $configPath, array $data): array
+    private function prepare(string $configPath, array $data, ?array $defaultData): array
     {
         try {
             $map = json_decode(
@@ -52,6 +54,7 @@ class HttpService
 
             throw new \Exception('Problemas al establecer el mapa de parámetros.');
         }
+        if ($defaultData) $data = array_merge($defaultData, $data);
         $parameters = $this->format([$data], $map);
         return reset($parameters);
     }
