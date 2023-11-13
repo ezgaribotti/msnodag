@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Dto\Api\ProvinceDto;
+use App\Dto\Requests\MakeHttpTransferDto;
 use App\Entity\Province;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -23,14 +24,7 @@ class ProvinceService
         if (!$provinces) throw new \Exception('No se encontraron provincias.', 404);
 
         $result = [];
-        foreach ($provinces as $province) {
-            $transport = new ProvinceDto();
-            $transport->setName($province->getName());
-            $transport->setExternalCode($province->getExternalCode());
-            $transport->setLatitude($province->getLatitude());
-            $transport->setLongitude($province->getLongitude());
-            $result[] = $transport->toArray();
-        }
+        foreach ($provinces as $province) $result[] = new ProvinceDto($province);
         return $result;
     }
 
@@ -41,10 +35,12 @@ class ProvinceService
 
         if ($counted > 0) throw new \Exception('Las provincias ya se guardaron previamente.');
 
-        $provinces = $this->httpService->fetch($operation->getUri());
-        $provinces = $provinces[$operation->getInsideKey()];
-        $provinces = $this->httpService->format($provinces, $operation->getResponseMap());
-        $provinces = $this->httpService->toDto($provinces, ProvinceDto::class);
+        $config = new MakeHttpTransferDto();
+        $config->setData([]);
+        $config->setClassName(ProvinceDto::class);
+        $config->setOperation($operation);
+
+        $provinces = $this->httpService->make($config);
         foreach ($provinces as $data) {
             if ($data instanceof ProvinceDto) {
                 $province = new Province();

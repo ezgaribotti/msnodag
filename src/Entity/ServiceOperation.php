@@ -28,6 +28,9 @@ class ServiceOperation
     #[ORM\Column(nullable: true)]
     private ?array $response_map = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?array $default_data = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -89,6 +92,18 @@ class ServiceOperation
     public function setResponseMap(?array $response_map): static
     {
         $this->response_map = $response_map;
+
+        return $this;
+    }
+
+    public function getDefaultData(): ?array
+    {
+        return $this->default_data;
+    }
+
+    public function setDefaultData(?array $default_data): static
+    {
+        $this->default_data = $default_data;
 
         return $this;
     }

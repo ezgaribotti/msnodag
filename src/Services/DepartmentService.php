@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Dto\Api\DepartmentDto;
 use App\Dto\Requests\DepartmentTransferDto;
+use App\Dto\Requests\MakeHttpTransferDto;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DepartmentService
@@ -20,18 +21,12 @@ class DepartmentService
     public function search(DepartmentTransferDto $data): array
     {
         $operation = $this->operationService->getByName(self::OPERATION_NAME);
-        $parameters = $this->httpService->prepare($operation->getConfigPath(), $data->toArray());
-        $departments = $this->httpService->fetch($operation->getUri(), $parameters);
-        $departments = $departments[$operation->getInsideKey()];
 
-        if (!$departments) throw new \Exception('No se encontraron departamentos.', 404);
+        $config = new MakeHttpTransferDto();
+        $config->setData($data->toArray());
+        $config->setClassName(DepartmentDto::class);
+        $config->setOperation($operation);
 
-        $departments = $this->httpService->format($departments, $operation->getResponseMap());
-        $departments = $this->httpService->toDto($departments, DepartmentDto::class);
-        $result = [];
-        foreach ($departments as $department) {
-            if ($department instanceof DepartmentDto) $result[] = $department->toArray();
-        }
-        return $result;
+        return $this->httpService->make($config);
     }
 }
