@@ -24,14 +24,7 @@ class ProvinceService
         if (!$provinces) throw new \Exception('No se encontraron provincias.', 404);
 
         $result = [];
-        foreach ($provinces as $province) {
-            $transport = new ProvinceDto();
-            $transport->setName($province->getName());
-            $transport->setExternalCode($province->getExternalCode());
-            $transport->setLatitude($province->getLatitude());
-            $transport->setLongitude($province->getLongitude());
-            $result[] = $transport->toArray();
-        }
+        foreach ($provinces as $province) $result[] = new ProvinceDto($province);
         return $result;
     }
 
