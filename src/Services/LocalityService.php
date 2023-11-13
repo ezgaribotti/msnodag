@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Dto\Api\LocalityDto;
 use App\Dto\Requests\LocalityTransferDto;
+use App\Dto\Requests\MakeHttpTransferDto;
 use Doctrine\ORM\EntityManagerInterface;
 
 class LocalityService
@@ -20,18 +21,12 @@ class LocalityService
     public function search(LocalityTransferDto $data): array
     {
         $operation = $this->operationService->getByName(self::OPERATION_NAME);
-        $parameters = $this->httpService->prepare($operation->getConfigPath(), $data->toArray());
-        $localities = $this->httpService->fetch($operation->getUri(), $parameters);
-        $localities = $localities[$operation->getInsideKey()];
 
-        if (!$localities) throw new \Exception('No se encontraron localidades.', 404);
+        $config = new MakeHttpTransferDto();
+        $config->setData($data->toArray());
+        $config->setClassName(LocalityDto::class);
+        $config->setOperation($operation);
 
-        $localities = $this->httpService->format($localities, $operation->getResponseMap());
-        $localities = $this->httpService->toDto($localities, LocalityDto::class);
-        $result = [];
-        foreach ($localities as $locality) {
-            if ($locality instanceof LocalityDto) $result[] = $locality->toArray();
-        }
-        return $result;
+        return $this->httpService->make($config);
     }
 }

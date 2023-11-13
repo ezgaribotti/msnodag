@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Dto\Requests\MakeHttpTransferDto;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\RequestOptions;
@@ -14,7 +15,20 @@ class HttpService
     )
     {}
 
-    public function fetch(string $uri, array $parameters = []): array
+    public function make(MakeHttpTransferDto $config): array
+    {
+        $operation = $config->getOperation();
+        $parameters = $this->prepare($operation->getConfigPath(), $config->getData());
+        $response = $this->fetch($operation->getUri(), $parameters);
+        $response = $response[$operation->getInsideKey()];
+
+        if (!$response) throw new \Exception('No se encontraron datos.', 404);
+
+        $response = $this->format($response, $operation->getResponseMap());
+        return $this->toDto($response, $config->getClassName());
+    }
+
+    private function fetch(string $uri, array $parameters = []): array
     {
         $client = new Client();
         try {
@@ -28,7 +42,7 @@ class HttpService
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function prepare(string $configPath, array $data): array
+    private function prepare(string $configPath, array $data): array
     {
         try {
             $map = json_decode(
@@ -42,7 +56,7 @@ class HttpService
         return reset($parameters);
     }
 
-    public function format(array $data, array $map): array
+    private function format(array $data, array $map): array
     {
         $result = [];
         foreach ($data as $property) {
@@ -63,7 +77,7 @@ class HttpService
         return $result;
     }
 
-    public function toDto(array $data, string $className): array
+    private function toDto(array $data, string $className): array
     {
         $result = [];
         foreach ($data as $property) $result[] = new $className($property);
