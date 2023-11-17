@@ -24,6 +24,12 @@ class ProvinceService
         return $this->recoveryService->recoverAll(Province::class, ProvinceDto::class);
     }
 
+    public function getByCode(string $code): ProvinceDto
+    {
+        return $this->recoveryService->recoverByCode(
+            $code, self::OPERATION_NAME, Province::class, ProvinceDto::class);
+    }
+
     public function load(): void
     {
         $operation = $this->operationService->getByName(self::OPERATION_NAME);
