@@ -24,7 +24,7 @@ class LocalityService
 
         $config = new MakeHttpTransferDto();
         $config->setData($data->toArray());
-        $config->setClassName(LocalityDto::class);
+        $config->setDto(LocalityDto::class);
         $config->setOperation($operation);
 
         return $this->httpService->make($config);

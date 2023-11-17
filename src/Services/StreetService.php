@@ -24,7 +24,7 @@ class StreetService
 
         $config = new MakeHttpTransferDto();
         $config->setData($data->toArray());
-        $config->setClassName(StreetDto::class);
+        $config->setDto(StreetDto::class);
         $config->setOperation($operation);
 
         return $this->httpService->make($config);

@@ -24,7 +24,7 @@ class DepartmentService
 
         $config = new MakeHttpTransferDto();
         $config->setData($data->toArray());
-        $config->setClassName(DepartmentDto::class);
+        $config->setDto(DepartmentDto::class);
         $config->setOperation($operation);
 
         return $this->httpService->make($config);

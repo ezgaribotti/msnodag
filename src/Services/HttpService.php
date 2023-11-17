@@ -15,7 +15,7 @@ class HttpService
     )
     {}
 
-    public function make(MakeHttpTransferDto $config): array
+    public function make(MakeHttpTransferDto $config, bool $disableException = false): array
     {
         $operation = $config->getOperation();
         $parameters = $this->prepare(
@@ -24,10 +24,10 @@ class HttpService
         $response = $this->fetch($operation->getUri(), $parameters);
         $response = $response[$operation->getInsideKey()];
 
-        if (!$response) throw new \Exception('No se encontraron datos.', 404);
+        if (!$response && !$disableException) throw new \Exception('No se encontraron datos.', 404);
 
         $response = $this->format($response, $operation->getResponseMap());
-        return $this->toDto($response, $config->getClassName());
+        return $this->toDto($response, $config->getDto());
     }
 
     private function fetch(string $uri, array $parameters = []): array

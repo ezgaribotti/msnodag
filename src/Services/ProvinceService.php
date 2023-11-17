@@ -14,18 +14,14 @@ class ProvinceService
     public function __construct(
         protected EntityManagerInterface $entityManager,
         protected OperationService $operationService,
-        protected HttpService $httpService
+        protected HttpService $httpService,
+        protected RecoveryService $recoveryService
     )
     {}
 
     public function getAll(): array
     {
-        $provinces = $this->entityManager->getRepository(Province::class)->findAll();
-        if (!$provinces) throw new \Exception('No se encontraron provincias.', 404);
-
-        $result = [];
-        foreach ($provinces as $province) $result[] = new ProvinceDto($province);
-        return $result;
+        return $this->recoveryService->recoverAll(Province::class, ProvinceDto::class);
     }
 
     public function load(): void
@@ -37,19 +33,17 @@ class ProvinceService
 
         $config = new MakeHttpTransferDto();
         $config->setData([]);
-        $config->setClassName(ProvinceDto::class);
+        $config->setDto(ProvinceDto::class);
         $config->setOperation($operation);
 
-        $provinces = $this->httpService->make($config);
-        foreach ($provinces as $data) {
-            if ($data instanceof ProvinceDto) {
-                $province = new Province();
-                $province->setName($data->getName());
-                $province->setExternalCode($data->getExternalCode());
-                $province->setLatitude($data->getLatitude());
-                $province->setLongitude($data->getLongitude());
-                $this->entityManager->persist($province);
-            }
+        $response = $this->httpService->make($config);
+        foreach ($response as $data) {
+            $province = new Province();
+            $province->setName($data->getName());
+            $province->setExternalCode($data->getExternalCode());
+            $province->setLatitude($data->getLatitude());
+            $province->setLongitude($data->getLongitude());
+            $this->entityManager->persist($province);
         }
         $this->entityManager->flush();
     }
