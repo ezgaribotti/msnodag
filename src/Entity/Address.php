@@ -32,11 +32,17 @@ class Address
     #[ORM\Column]
     private ?int $street_number = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $postal_code = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $reference = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $created_at = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updated_at = null;
 
     public function getId(): ?int
     {
@@ -120,7 +126,7 @@ class Address
         return $this->postal_code;
     }
 
-    public function setPostalCode(?string $postal_code): static
+    public function setPostalCode(string $postal_code): static
     {
         $this->postal_code = $postal_code;
 
@@ -135,6 +141,30 @@ class Address
     public function setReference(?string $reference): static
     {
         $this->reference = $reference;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $created_at): static
+    {
+        $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updated_at): static
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }
