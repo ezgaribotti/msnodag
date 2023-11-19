@@ -43,7 +43,8 @@ class ResponseMacroServiceProvider
         }
         $response = new ResponseDto();
         $response->setSuccess(false);
-        if ($statusCode === 0) $statusCode = 500;
+        if (!is_numeric($statusCode)) $statusCode = 500;
+        if ($statusCode <= 100 || $statusCode > 600) $statusCode = 500;
         $response->setStatusCode($statusCode);
         $response->setMessage($message);
         return new JsonResponse($response->toArray(), $statusCode);

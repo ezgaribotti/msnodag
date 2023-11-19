@@ -6,18 +6,19 @@ use App\Dto\Dto;
 
 class DepartmentDto extends Dto
 {
-    protected int $id;
+    protected ?int $id;
     protected string $name;
     protected string $external_code;
+    protected string $province_code;
     protected float $latitude;
     protected float $longitude;
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): void
+    public function setId(?int $id): void
     {
         $this->id = $id;
     }
@@ -60,5 +61,15 @@ class DepartmentDto extends Dto
     public function setLongitude(float $longitude): void
     {
         $this->longitude = $longitude;
+    }
+
+    public function getProvinceCode(): string
+    {
+        return $this->province_code;
+    }
+
+    public function setProvinceCode(string $province_code): void
+    {
+        $this->province_code = $province_code;
     }
 }

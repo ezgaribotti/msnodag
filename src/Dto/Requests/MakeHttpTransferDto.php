@@ -8,7 +8,7 @@ use App\Dto\Dto;
 class MakeHttpTransferDto extends Dto
 {
     protected array $data;
-    protected string $className;
+    protected string $dto;
     protected OperationDto $operation;
 
     public function getData(): array
@@ -21,14 +21,14 @@ class MakeHttpTransferDto extends Dto
         $this->data = $data;
     }
 
-    public function getClassName(): string
+    public function getDto(): string
     {
-        return $this->className;
+        return $this->dto;
     }
 
-    public function setClassName(string $className): void
+    public function setDto(string $dto): void
     {
-        $this->className = $className;
+        $this->dto = $dto;
     }
 
     public function getOperation(): OperationDto

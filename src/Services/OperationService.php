@@ -23,11 +23,10 @@ class OperationService
             throw new \Exception('No se encontró la operación especificada.');
         }
 
-        $result = new OperationDto();
+        $result = new OperationDto($operation);
         $uri = $operation->getService()->getBaseUri() . $operation->getUri();
         $result->setUri($uri);
         $result->setConfigPath($operation->getService()->getConfigPath());
-        $result->setInsideKey($operation->getInsideKey());
         $result->setResponseMap($operation->getResponseMap());
         $result->setDefaultData($operation->getDefaultData());
         return $result;

@@ -3,7 +3,9 @@
 namespace App\Rules\Api;
 
 use App\Rules\Rule;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Optional;
 
 class DepartmentRule extends Rule
 {
@@ -11,12 +13,13 @@ class DepartmentRule extends Rule
     {
         $fields = [
             'name' => [
-                new Assert\NotBlank(),
-                new Assert\Length(null, 3)
+                new NotBlank(),
+                new Length(null, 3)
             ],
-            'province_code' => [
-                new Assert\NotBlank()
-            ]
+            'province_code' => new Optional([
+                new NotBlank(),
+                new Length(2)
+            ])
         ];
 
         $this->inspect($data, $fields);

@@ -2,6 +2,7 @@
 
 namespace App\Dto;
 
+use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -34,7 +35,9 @@ abstract class Dto
 
     private function serialize(object $data): array
     {
-        $serializer = new Serializer([new ObjectNormalizer()]);
+        $serializer = new Serializer([
+            new ObjectNormalizer(null, new CamelCaseToSnakeCaseNameConverter())
+        ]);
         try {
             $result = $serializer->normalize($data);
         } catch (\Exception $exception) {
