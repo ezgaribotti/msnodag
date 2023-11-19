@@ -38,6 +38,8 @@ class StreetService
 
     public function getByCode(string $code): StreetDto
     {
+        $this->recoveryService->validateCodeLength($code, 13);
+
         $data = $this->recoveryService->recoverByCode(
             $code, self::OPERATION_NAME, Street::class, StreetDto::class);
 

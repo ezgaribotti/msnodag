@@ -17,8 +17,7 @@ abstract class Rule
     {
         $constraints = new Assert\Collection($fields);
         $validator = Validation::createValidator();
-        $violations = $validator->validate(
-            $this->clean($data), $constraints);
+        $violations = $validator->validate($data, $constraints);
         if (count($violations) !== 0) {
             foreach ($violations as $violation) {
 

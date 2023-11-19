@@ -38,6 +38,8 @@ class LocalityService
 
     public function getByCode(string $code): LocalityDto
     {
+        $this->recoveryService->validateCodeLength($code, 11);
+
         $data = $this->recoveryService->recoverByCode(
             $code, self::OPERATION_NAME, Locality::class, LocalityDto::class);
 

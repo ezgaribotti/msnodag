@@ -57,4 +57,10 @@ class RecoveryService
         }
         return new $dto($data);
     }
+
+    public function validateCodeLength(string $code, int $length): void
+    {
+        if (strlen($code) !== $length)
+            throw new \Exception('El código debe tener una longitud de '. $length .' caracteres.');
+    }
 }

@@ -36,6 +36,8 @@ class DepartmentService
 
     public function getByCode(string $code): DepartmentDto
     {
+        $this->recoveryService->validateCodeLength($code, 5);
+
         $data = $this->recoveryService->recoverByCode(
             $code, self::OPERATION_NAME, Department::class, DepartmentDto::class);
 

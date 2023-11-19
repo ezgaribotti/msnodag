@@ -26,6 +26,8 @@ class ProvinceService
 
     public function getByCode(string $code): ProvinceDto
     {
+        $this->recoveryService->validateCodeLength($code, 2);
+
         return $this->recoveryService->recoverByCode(
             $code, self::OPERATION_NAME, Province::class, ProvinceDto::class);
     }
