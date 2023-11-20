@@ -20,7 +20,7 @@ class AddressController extends AbstractController
     )
     {}
 
-    #[Route('/addresses', name: 'app_address', methods: ['POST'])]
+    #[Route('/addresses', methods: ['POST'])]
     public function index(Request $request): JsonResponse
     {
         $content = json_decode($request->getContent(), true);
@@ -31,12 +31,24 @@ class AddressController extends AbstractController
         }
 
         try {
-            $address = $this->addressService->save(
-                new AddressTransferDto($content));
+            return $this->response->success(
+                $this->addressService->save(
+                    new AddressTransferDto($content)));
 
         } catch (\Exception $exception) {
             return $this->response->error($exception->getMessage(), $exception->getCode());
         }
-        return $this->response->success($address);
+    }
+
+    #[Route('/addresses/{id}', methods: ['GET'])]
+    public function showById(string $id): JsonResponse
+    {
+        try {
+            return $this->response->success(
+                $this->addressService->getByFinger($id));
+
+        } catch (\Exception $exception) {
+            return $this->response->error($exception->getMessage(), $exception->getCode());
+        }
     }
 }

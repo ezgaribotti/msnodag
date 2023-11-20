@@ -8,6 +8,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class ResponseMacroServiceProvider
 {
+    const DEFAULT_FORMAT = 'Y-m-d H:i:s';
+
     public function success(Dto|array $data = null, string $message = null): JsonResponse
     {
         if (!$message) {
@@ -18,18 +20,12 @@ class ResponseMacroServiceProvider
         $response->setStatusCode(200);
         $response->setMessage($message);
         if ($data) {
-            if ($data instanceof Dto) $response->setData($data->toArray());
+            if ($data instanceof Dto)
+                $response->setData($this->verifyDto($data));
 
             if (is_array($data)) {
                 $result = [];
-                foreach ($data as $key => $value) {
-                    if (!$value instanceof Dto) {
-                        $message = 'El objeto de transferencia de datos en el listado de respuesta no es válido.';
-
-                        throw new \Exception($message, 500);
-                    }
-                    $result[] = $value->toArray();
-                }
+                foreach ($data as $property) $result[] = $this->verifyDto($property);
                 $response->setData($result);
             }
         }
@@ -48,5 +44,21 @@ class ResponseMacroServiceProvider
         $response->setStatusCode($statusCode);
         $response->setMessage($message);
         return new JsonResponse($response->toArray(), $statusCode);
+    }
+
+    private function verifyDto(mixed $dto): array
+    {
+        if (!$dto instanceof Dto) {
+            $message = 'El objeto de transferencia de datos en el listado de respuesta no es válido.';
+
+            throw new \Exception($message, 500);
+        }
+        $result = [];
+        foreach ($dto->toArray() as $key => $value) {
+            if ($value instanceof \DateTimeInterface)
+                $value = $value->format(self::DEFAULT_FORMAT);
+            $result[$key] = $value;
+        }
+        return $result;
     }
 }
