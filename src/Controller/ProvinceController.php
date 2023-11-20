@@ -16,7 +16,7 @@ class ProvinceController extends AbstractController
     )
     {}
 
-    #[Route('/provinces', name: 'app_province')]
+    #[Route('/provinces', methods: ['GET'])]
     public function index(): JsonResponse
     {
         try {

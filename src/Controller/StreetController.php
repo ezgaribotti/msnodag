@@ -20,7 +20,7 @@ class StreetController extends AbstractController
     )
     {}
 
-    #[Route('/streets', name: 'app_street')]
+    #[Route('/streets', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
         try {

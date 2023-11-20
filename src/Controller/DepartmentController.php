@@ -20,7 +20,7 @@ class DepartmentController extends AbstractController
     )
     {}
 
-    #[Route('/departments', name: 'app_department')]
+    #[Route('/departments', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
         try {

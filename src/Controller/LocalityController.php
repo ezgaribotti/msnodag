@@ -20,7 +20,7 @@ class LocalityController extends AbstractController
     )
     {}
 
-    #[Route('/localities', name: 'app_locality')]
+    #[Route('/localities', methods: ['GET'])]
     public function index(Request $request): JsonResponse
     {
         try {
