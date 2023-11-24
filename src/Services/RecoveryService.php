@@ -63,4 +63,10 @@ class RecoveryService
         if (strlen($code) !== $length)
             throw new \Exception('El código debe tener una longitud de '. $length .' caracteres.');
     }
+
+    public function validateExists(string $entity, array $criteria): void
+    {
+        if (!$this->entityManager->getRepository($entity)->count($criteria))
+            throw new \Exception('No se encontró el registro.', 404);
+    }
 }

@@ -5,12 +5,13 @@ namespace App\Rules\Api;
 use App\Rules\Rule;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Constraints\Type;
 
 class AddressRule extends Rule
 {
-    public function validate(array $data): void
+    public function validateToSave(array $data): void
     {
         $fields = [
             'province_code' => [
@@ -31,6 +32,23 @@ class AddressRule extends Rule
             ],
             'street_number' => [
                 new NotBlank(),
+                new Type('integer')
+            ],
+            'postal_code' => [
+                new NotBlank()
+            ],
+            'reference' => new Optional([
+                new NotBlank()
+            ])
+        ];
+        $this->inspect($data, $fields);
+    }
+
+    public function validateToUpdate(array $data): void
+    {
+        $fields = [
+            'street_number' => [
+                new NotNull(),
                 new Type('integer')
             ],
             'postal_code' => [

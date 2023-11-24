@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Dto\Requests\AddressTransferDto;
+use App\Dto\Requests\UpdateAddressTransferDto;
 use App\Providers\ResponseMacroServiceProvider;
 use App\Rules\Api\AddressRule;
 use App\Services\AddressService;
@@ -21,11 +22,11 @@ class AddressController extends AbstractController
     {}
 
     #[Route('/addresses', methods: ['POST'])]
-    public function index(Request $request): JsonResponse
+    public function save(Request $request): JsonResponse
     {
         $content = json_decode($request->getContent(), true);
         try {
-            $this->addressRule->validate($content);
+            $this->addressRule->validateToSave($content);
         } catch (\Exception $exception) {
             return $this->response->error($exception->getMessage(), 422);
         }
@@ -50,5 +51,24 @@ class AddressController extends AbstractController
         } catch (\Exception $exception) {
             return $this->response->error($exception->getMessage(), $exception->getCode());
         }
+    }
+
+    #[Route('/addresses/{id}', methods: ['PUT'])]
+    public function updateById(string $id, Request $request): JsonResponse
+    {
+        $content = json_decode($request->getContent(), true);
+        try {
+            $this->addressRule->validateToUpdate($content);
+        } catch (\Exception $exception) {
+            return $this->response->error($exception->getMessage(), 422);
+        }
+
+        try {
+            $this->addressService->updateByFinger($id, new UpdateAddressTransferDto($content));
+
+        } catch (\Exception $exception) {
+            return $this->response->error($exception->getMessage(), $exception->getCode());
+        }
+        return $this->response->success();
     }
 }

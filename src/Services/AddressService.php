@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Dto\Api\AddressDto;
 use App\Dto\Api\SavedAddressDto;
 use App\Dto\Requests\AddressTransferDto;
+use App\Dto\Requests\UpdateAddressTransferDto;
 use App\Entity\Address;
 use App\Entity\Department;
 use App\Entity\Locality;
@@ -18,6 +19,7 @@ class AddressService
 {
     public function __construct(
         protected EntityManagerInterface $entityManager,
+        protected RecoveryService $recoveryService,
         protected ProvinceService $provinceService,
         protected DepartmentService $departmentService,
         protected LocalityService $localityService,
@@ -29,12 +31,10 @@ class AddressService
     {
         $this->validateFinger($finger);
 
-        $address = $this->entityManager->getRepository(Address::class)->findOneBy([
-            'finger' => $finger
-        ]);
-        if (!$address)
-            throw new \Exception('No se encontró la dirección.', 404);
+        $criteria = ['finger' => $finger];
 
+        $this->recoveryService->validateExists(Address::class, $criteria);
+        $address = $this->entityManager->getRepository(Address::class)->findOneBy($criteria);
         $result = new AddressDto($address);
         $result->setId($finger);
         $result->setProvinceName($address->getProvince()->getName());
@@ -75,16 +75,32 @@ class AddressService
         return $result;
     }
 
-    public function validateFinger(string $finger): void
+    public function updateByFinger(string $finger, UpdateAddressTransferDto $data): void
+    {
+        $this->validateFinger($finger);
+
+        $criteria = ['finger' => $finger];
+
+        $this->recoveryService->validateExists(Address::class, $criteria);
+        $address = $this->entityManager->getRepository(Address::class)->findOneBy($criteria);
+        $now = Carbon::now();
+        $address->setStreetNumber($data->getStreetNumber());
+        $address->setPostalCode($data->getPostalCode());
+        $address->setReference($data->getReference());
+        $address->setUpdatedAt($now);
+        $this->entityManager->flush();
+    }
+
+    private function validateFinger(string $finger): void
     {
         try {
-            Uuid::fromBase58($finger);
+            $finger = Uuid::fromBase58($finger);
         } catch (\Exception $exception) {
 
             throw new \Exception('No se reconoce el formato del id.');
         }
 
-        if (!Uuid::isValid(Uuid::fromBase58($finger)))
+        if (!Uuid::isValid($finger))
 
             throw new \Exception('El id de la dirección no es válido.');
     }
