@@ -21,10 +21,10 @@ class StreetController extends AbstractController
     {}
 
     #[Route('/streets', methods: ['GET'])]
-    public function index(Request $request): JsonResponse
+    public function search(Request $request): JsonResponse
     {
         try {
-            $this->streetRule->validate($request->query->all());
+            $this->streetRule->validateToSearch($request->query->all());
         } catch (\Exception $exception) {
             return $this->response->error($exception->getMessage(), 422);
         }

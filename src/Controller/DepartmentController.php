@@ -21,10 +21,10 @@ class DepartmentController extends AbstractController
     {}
 
     #[Route('/departments', methods: ['GET'])]
-    public function index(Request $request): JsonResponse
+    public function search(Request $request): JsonResponse
     {
         try {
-            $this->departmentRule->validate($request->query->all());
+            $this->departmentRule->validateToSearch($request->query->all());
         } catch (\Exception $exception) {
             return $this->response->error($exception->getMessage(), 422);
         }

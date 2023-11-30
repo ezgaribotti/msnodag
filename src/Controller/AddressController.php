@@ -41,20 +41,20 @@ class AddressController extends AbstractController
         }
     }
 
-    #[Route('/addresses/{id}', methods: ['GET'])]
-    public function showById(string $id): JsonResponse
+    #[Route('/addresses/{finger}', methods: ['GET'])]
+    public function showByFinger(string $finger): JsonResponse
     {
         try {
             return $this->response->success(
-                $this->addressService->getByFinger($id));
+                $this->addressService->getByFinger($finger));
 
         } catch (\Exception $exception) {
             return $this->response->error($exception->getMessage(), $exception->getCode());
         }
     }
 
-    #[Route('/addresses/{id}', methods: ['PUT'])]
-    public function updateById(string $id, Request $request): JsonResponse
+    #[Route('/addresses/{finger}', methods: ['PUT'])]
+    public function updateByFinger(string $finger, Request $request): JsonResponse
     {
         $content = json_decode($request->getContent(), true);
         try {
@@ -64,7 +64,7 @@ class AddressController extends AbstractController
         }
 
         try {
-            $this->addressService->updateByFinger($id, new UpdateAddressTransferDto($content));
+            $this->addressService->updateByFinger($finger, new UpdateAddressTransferDto($content));
 
         } catch (\Exception $exception) {
             return $this->response->error($exception->getMessage(), $exception->getCode());
