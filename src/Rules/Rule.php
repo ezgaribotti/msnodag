@@ -6,7 +6,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-abstract class Rule
+abstract class Rule extends Closure
 {
     public function __construct(
         protected TranslatorInterface $translator
@@ -15,6 +15,7 @@ abstract class Rule
 
     public function inspect(array $data, array $fields): void
     {
+        $fields = $this->assign($fields);
         $constraints = new Assert\Collection($fields);
         $validator = Validation::createValidator();
         $violations = $validator->validate($data, $constraints);

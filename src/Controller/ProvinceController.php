@@ -16,8 +16,8 @@ class ProvinceController extends AbstractController
     )
     {}
 
-    #[Route('/provinces', name: 'app_province')]
-    public function index(): JsonResponse
+    #[Route('/provinces', methods: ['GET'])]
+    public function search(): JsonResponse
     {
         try {
             return $this->response->success($this->provinceService->getAll());

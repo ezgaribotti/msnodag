@@ -20,11 +20,11 @@ class LocalityController extends AbstractController
     )
     {}
 
-    #[Route('/localities', name: 'app_locality')]
-    public function index(Request $request): JsonResponse
+    #[Route('/localities', methods: ['GET'])]
+    public function search(Request $request): JsonResponse
     {
         try {
-            $this->localityRule->validate($request->query->all());
+            $this->localityRule->validateToSearch($request->query->all());
         } catch (\Exception $exception) {
             return $this->response->error($exception->getMessage(), 422);
         }
