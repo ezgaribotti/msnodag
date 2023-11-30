@@ -71,4 +71,16 @@ class AddressController extends AbstractController
         }
         return $this->response->success();
     }
+
+    #[Route('/addresses/{finger}', methods: ['DELETE'])]
+    public function deleteByFinger(string $finger): JsonResponse
+    {
+        try {
+            $this->addressService->deleteByFinger($finger);
+
+        } catch (\Exception $exception) {
+            return $this->response->error($exception->getMessage(), $exception->getCode());
+        }
+        return $this->response->success();
+    }
 }

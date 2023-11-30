@@ -91,6 +91,18 @@ class AddressService
         $this->entityManager->flush();
     }
 
+    public function deleteByFinger(string $finger): void
+    {
+        $this->validateFinger($finger);
+
+        $criteria = ['finger' => $finger];
+
+        $this->recoveryService->validateExists(Address::class, $criteria);
+        $address = $this->entityManager->getRepository(Address::class)->findOneBy($criteria);
+        $this->entityManager->remove($address);
+        $this->entityManager->flush();
+    }
+
     private function validateFinger(string $finger): void
     {
         try {
